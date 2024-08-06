@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import json
 
+
 class Book:
     def __init__(self, isbn, name, author, price, quantity):
         self.Isbn = isbn

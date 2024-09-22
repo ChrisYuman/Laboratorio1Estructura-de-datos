@@ -1,0 +1,20 @@
+{"isbn": "13572249", "name": "Bared to You (Crossfire, #1)", "author": "Sylvia Day", "category": "null", "price": "41.90", "quantity": 100}
+{"isbn": "127455", "name": "The Lies of Locke Lamora (Gentleman Bastard, #1)", "author": "Scott Lynch", "category": "null", "price": "43.00", "quantity": 100}
+{"isbn": "5552", "name": "QED: The Strange Theory of Light and Matter", "author": "Richard Feynman", "category": "null", "price": "42.30", "quantity": 100}
+{"isbn": "51362", "name": "The Survivors Club", "author": "Lisa Gardner", "category": "null", "price": "40.50", "quantity": 100}
+{"isbn": "270807", "name": "Burned (Burned, #1)", "author": "Ellen Hopkins", "category": "null", "price": "42.40", "quantity": 100}
+{"isbn": "4570768", "name": "Willow", "author": "Julia Hoban", "category": "null", "price": "39.40", "quantity": 100}
+{"isbn": "563458", "name": "Fallen Hearts (Casteel, #3)", "author": "V.C. Andrews", "category": "null", "price": "38.90", "quantity": 100}
+{"isbn": "99218", "name": "The Machine Crusade (Legends of Dune, #2)", "author": "Brian Herbert, Kevin J. Anderson", "category": "null", "price": "37.30", "quantity": 100}
+{"isbn": "368916", "name": "84, Charing Cross Road", "author": "Helene Hanff", "category": "null", "price": "41.90", "quantity": 100}
+{"isbn": "368916", "name": "84, Charing Cross Road", "author": "Helene Hanff", "category": "null", "price": "41.90", "quantity": 100}
+{"isbn": "353342", "name": "The Cross of Lead (Crispin, #1)", "author": "Avi", "category": "null", "price": "35.90", "quantity": 100}
+{"isbn": "5886881", "name": "Dark Places", "author": "Gillian Flynn", "category": "null", "price": "39.20", "quantity": 100}
+{"isbn": "706", "name": "America (The Book): A Citizen's Guide to Democracy Inaction", "author": "Jon Stewart, Ben Karlin, David Javerbaum, Rich Bloomquist, Steve Bodow, Tim Carvell, Eric Drysdale, J.R. Havlan, Scott Jacobson, Tom Johnson, Rob Kutner, Chris Regan, Jason Reich, Jason Ross, Stephen Colbert, Samantha Bee, Rob Corddry, Brendan Hay, Ed Helms", "category": "null", "price": "40.20", "quantity": 100}
+{"isbn": "9594", "name": "Timequake", "author": "Kurt Vonnegut Jr.", "category": "null", "price": "37.10", "quantity": 100}
+{"isbn": "103342", "name": "Stolen Lives: Twenty Years in a Desert Jail", "author": "Malika Oufkir, Michèle Fitoussi", "category": "null", "price": "40.80", "quantity": 100}
+{"isbn": "55229", "name": "April 1865: The Month That Saved America", "author": "Jay Winik", "category": "null", "price": "41.50", "quantity": 100}
+{"isbn": "17333237", "name": "Stella Bain", "author": "Anita Shreve", "category": "null", "price": "34.10", "quantity": 100}
+{"isbn": "13497", "name": "A Feast for Crows (A Song of Ice and Fire, #4)", "author": "George R.R. Martin", "category": "null", "price": "41.00", "quantity": 100}
+{"isbn": "46677", "name": "Alexander and the Terrible, Horrible, No Good, Very Bad Day", "author": "Judith Viorst, Ray Cruz", "category": "null", "price": "42.20", "quantity": 100}
+{"isbn": "53496", "name": "Walk Two Moons", "author": "Sharon Creech", "category": "null", "price": "39.50", "quantity": 100}

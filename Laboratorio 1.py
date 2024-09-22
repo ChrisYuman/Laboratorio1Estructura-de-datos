@@ -2,12 +2,12 @@ import tkinter as tk
 from tkinter import filedialog
 import json
 
-
 class Book:
-    def __init__(self, isbn, name, author, price, quantity):
+    def __init__(self, isbn, name, author, category, price, quantity):
         self.Isbn = isbn
         self.Name = name
         self.Author = author
+        self.Category = category
         self.Price = price
         self.Quantity = quantity
 
@@ -66,104 +66,6 @@ class BTree:
             z.Children = y.Children[self._t:(2 * self._t)]
             y.Children = y.Children[0:self._t]
 
-    def Delete(self, isbn):
-        self.DeleteNode(self._root, isbn)
-        if len(self._root.Books) == 0:
-            if not self._root.IsLeaf:
-                self._root = self._root.Children[0]
-            else:
-                self._root = BTreeNode(self._t)
-        print(f"Libro eliminado con ISBN: {isbn}")
-
-    def DeleteNode(self, node, isbn):
-        idx = next((i for i, book in enumerate(node.Books) if book.Isbn == isbn), -1)
-        if idx != -1:
-            if node.IsLeaf:
-                node.Books.pop(idx)
-            else:
-                if len(node.Children[idx].Books) >= self._t:
-                    pred = self.GetPredecessor(node, idx)
-                    node.Books[idx] = pred
-                    self.DeleteNode(node.Children[idx], pred.Isbn)
-                elif len(node.Children[idx + 1].Books) >= self._t:
-                    succ = self.GetSuccessor(node, idx)
-                    node.Books[idx] = succ
-                    self.DeleteNode(node.Children[idx + 1], succ.Isbn)
-                else:
-                    self.Merge(node, idx)
-                    self.DeleteNode(node.Children[idx], isbn)
-        else:
-            if node.IsLeaf:
-                return
-            idx = next((i for i, book in enumerate(node.Books) if isbn < book.Isbn), len(node.Books))
-            if len(node.Children[idx].Books) < self._t:
-                self.Fill(node, idx)
-            if idx > len(node.Books):
-                self.DeleteNode(node.Children[idx - 1], isbn)
-            else:
-                self.DeleteNode(node.Children[idx], isbn)
-
-    def GetPredecessor(self, node, idx):
-        current = node.Children[idx]
-        while not current.IsLeaf:
-            current = current.Children[len(current.Books)]
-        return current.Books[len(current.Books) - 1]
-
-    def GetSuccessor(self, node, idx):
-        current = node.Children[idx + 1]
-        while not current.IsLeaf:
-            current = current.Children[0]
-        return current.Books[0]
-
-    def Merge(self, node, idx):
-        child = node.Children[idx]
-        sibling = node.Children[idx + 1]
-        child.Books.append(node.Books[idx])
-        child.Books.extend(sibling.Books)
-        if not child.IsLeaf:
-            child.Children.extend(sibling.Children)
-        node.Books.pop(idx)
-        node.Children.pop(idx + 1)
-
-    def Fill(self, node, idx):
-        if idx != 0 and len(node.Children[idx - 1].Books) >= self._t:
-            self.BorrowFromPrev(node, idx)
-        elif idx != len(node.Books) and len(node.Children[idx + 1].Books) >= self._t:
-            self.BorrowFromNext(node, idx)
-        else:
-            if idx != len(node.Books):
-                self.Merge(node, idx)
-            else:
-                self.Merge(node, idx - 1)
-
-    def BorrowFromPrev(self, node, idx):
-        child = node.Children[idx]
-        sibling = node.Children[idx - 1]
-        child.Books.insert(0, node.Books[idx - 1])
-        if not child.IsLeaf:
-            child.Children.insert(0, sibling.Children.pop())
-        node.Books[idx - 1] = sibling.Books.pop()
-
-    def BorrowFromNext(self, node, idx):
-        child = node.Children[idx]
-        sibling = node.Children[idx + 1]
-        child.Books.append(node.Books[idx])
-        if not child.IsLeaf:
-            child.Children.append(sibling.Children.pop(0))
-        node.Books[idx] = sibling.Books.pop(0)
-
-    def Update(self, isbn, updates):
-        book = self.SearchByIsbn(self._root, isbn)
-        if book:
-            for key, value in updates.items():
-                if key.lower() == "author":
-                    book.Author = value
-                elif key.lower() == "price":
-                    book.Price = float(value)
-                elif key.lower() == "quantity":
-                    book.Quantity = int(value)
-            print(f"Libro actualizado con ISBN: {isbn}")
-
     def SearchByName(self, name):
         results = []
         self.SearchByNameNode(self._root, name, results)
@@ -187,6 +89,23 @@ class BTree:
             return None
         return self.SearchByIsbn(node.Children[i], isbn)
 
+def format_book_output(book):
+    return json.dumps({
+        "isbn": book.Isbn,
+        "name": book.Name,
+        "author": book.Author,
+        "category": book.Category if book.Category else "null",  # Maneja nulos
+        "price": f"{book.Price:.2f}" if book.Price is not None else "null",  # Maneja nulos para precio
+        "quantity": book.Quantity if book.Quantity is not None else "null"  # Maneja nulos para cantidad
+    }, ensure_ascii=False)
+
+def write_output_to_file(results, output_file):
+    with open(output_file, 'w', encoding='utf-8') as file:
+        for result in results:
+            formatted_output = format_book_output(result)
+            file.write(formatted_output + "\n")
+    print(f"Archivo de salida generado: {output_file}")
+
 def select_file(file_type):
     root = tk.Tk()
     root.withdraw()  # Oculta la ventana principal de tkinter
@@ -198,68 +117,32 @@ def read_books_file(file_path, b_tree):
         for line in file:
             parts = line.strip().split(';')
             if len(parts) < 2:
-                print(f"Formato de linea invalido: {line}")
+                print(f"Formato de línea inválido: {line}")
                 continue
 
             operation = parts[0]
             try:
                 json_data = json.loads(parts[1])
-                print(f"JSON data: {json_data}")  # Imprimir para depurar
             except json.JSONDecodeError:
-                print(f"Error convertiendo data JASON: {parts[1]}")
+                print(f"Error convirtiendo data JSON: {parts[1]}")
                 continue
 
             if operation == "INSERT":
                 try:
-                    # Convertir los valores a los tipos adecuados
-                    json_data['price'] = float(json_data['price'])
-                    json_data['quantity'] = int(json_data['quantity'])
+                    # Asignar valores por defecto (None) si faltan claves en el JSON
+                    isbn = json_data.get('isbn', None)
+                    name = json_data.get('name', None)
+                    author = json_data.get('author', None)
+                    category = json_data.get('category', None)
+                    price = float(json_data['price']) if 'price' in json_data else None
+                    quantity = int(json_data['quantity']) if 'quantity' in json_data else None
 
-                    # Verificar que json_data contiene todas las claves necesarias
-                    required_keys = {'isbn', 'name', 'author', 'price', 'quantity'}
-                    if not required_keys.issubset(json_data.keys()):
-                        print(f"Error convertiendo data faltan keys para el JASON: {json_data}")
-                        continue
-
-                    book = Book(**json_data)
+                    # Crear el libro con valores nulos en caso de faltar claves
+                    book = Book(isbn, name, author, category, price, quantity)
                     b_tree.Insert(book)
-                    
-                except TypeError as e:
+
+                except (TypeError, ValueError) as e:
                     print(f"Error insertando el libro: {e}")
-                except ValueError as e:
-                    print(f"Error convertiendo data: {e}")
-            elif operation == "DELETE":
-                try:
-                    isbn = json_data.get('isbn')
-                    if isbn:
-                        book_to_delete = Book(isbn, None, None, None, None)
-                        b_tree.Delete(book_to_delete.Isbn)
-                        
-                    else:
-                        print(f"Faltan datos ISBN: {json_data}")
-                except TypeError as e:
-                    print(f"Error borrando el libro: {e}")
-                except ValueError as e:
-                    print(f"Error convertiendo data: {e}")
-            elif operation == "PATCH":
-                try:
-                    updates = json_data
-                    isbn = updates.get('isbn')
-                    if not isbn:
-                        print(f"Faltan datos ISBN: {updates}")
-                        continue
-
-                    if 'price' in updates:
-                        updates['price'] = float(updates['price'])
-                    if 'quantity' in updates:
-                        updates['quantity'] = int(updates['quantity'])
-
-                    b_tree.Update(isbn, updates)
-                    
-                except TypeError as e:
-                    print(f"Error actualizando el libro: {e}")
-                except ValueError as e:
-                    print(f"Error convertiendo data: {e}")
 
 def read_search_file(file_path, b_tree):
     results = []
@@ -275,22 +158,26 @@ def read_search_file(file_path, b_tree):
                 name = search_params.get('name')
                 search_results = b_tree.SearchByName(name)
                 results.extend(search_results)
+
+    write_output_to_file(results, "resultados_busqueda.txt")
     return results
 
 def main():
     b_tree = BTree(3)  # Inicializar Árbol B con grado 3
 
+    # Seleccionar archivo de libros
     books_file = select_file('books')
     if books_file:
         read_books_file(books_file, b_tree)
-        print("Libros cargados al arbol B.")
+        print("Libros cargados al árbol B.")
 
+    # Seleccionar archivo de búsqueda
     search_file = select_file('search')
     if search_file:
         results = read_search_file(search_file, b_tree)
-        print("Resultados de busqueda ")
+        print("Resultados de búsqueda:")
         for result in results:
-            print(json.dumps(result.__dict__, ensure_ascii=False))  # Imprimir el libro en una sola línea
+            print(json.dumps(result.__dict__, ensure_ascii=False))  # Imprimir libro en una línea
 
 if __name__ == "__main__":
     main()
